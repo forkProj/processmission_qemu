@@ -67,6 +67,10 @@ extensions = [
     'qmp_lexer',
 ]
 
+# The Chinese build helper also loads this extension for its reference pass.
+if os.environ.get('QEMU_DOCS_ZH') == '1':
+    extensions.insert(0, 'qemu_zh')
+
 if sphinx.version_info[:3] > (4, 0, 0):
     tags.add('sphinx4')
     extensions += ['dbusdoc']
@@ -151,7 +155,7 @@ language = 'en'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'translations', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

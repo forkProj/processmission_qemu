@@ -1,0 +1,15 @@
+{# SPDX-License-Identifier: MIT #}
+{% extends "!layout.html" %}
+{% block menu %}
+  {{ super() }}
+  <p class="caption"><span class="caption-text">项目仓库</span></p>
+  <ul>
+    <li><a href="https://gitlab.com/qemu-project/qemu">QEMU 官方仓库</a></li>
+    <li><a href="https://github.com/processmission/qemu/tree/docs-zh">中文文档维护仓库</a></li>
+  </ul>
+{% endblock %}
+{% block extrabody %}{% endblock %}
+{% block extrahead %}
+  {{ super() }}
+  <link rel="alternate" hreflang="en" href="{{ english_url }}">
+{% endblock %}

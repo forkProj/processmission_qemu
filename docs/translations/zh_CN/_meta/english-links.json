@@ -1,0 +1,14 @@
+{
+  "system/arm/ax650x-pyramid": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/ax650x-pyramid.rst",
+  "system/arm/musicpal": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/musicpal.rst",
+  "system/arm/phytium_e2000": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/phytium_e2000.rst",
+  "system/arm/phytium_pomelo": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/phytium_pomelo.rst",
+  "system/arm/rk3588": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/rk3588.rst",
+  "system/arm/s32k5": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/s32k5.rst",
+  "system/arm/stm32g474": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/arm/stm32g474.rst",
+  "system/riscv/k230-canmv": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/riscv/k230-canmv.rst",
+  "system/riscv/milkv-duo": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/riscv/milkv-duo.rst",
+  "system/riscv/riscv-server-ref": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/riscv/riscv-server-ref.rst",
+  "system/riscv/spacemit-k3": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/riscv/spacemit-k3.rst",
+  "system/target-mcs51": "https://github.com/processmission/qemu/blob/docs-zh/docs/system/target-mcs51.rst"
+}

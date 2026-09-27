@@ -1,0 +1,15 @@
+{# SPDX-License-Identifier: MIT #}
+{% extends "!breadcrumbs.html" %}
+{% block breadcrumbs %}
+  <li><a href="{{ pathto(master_doc) }}">中文文档（devel）</a> &raquo;</li>
+  {% for doc in parents %}<li><a href="{{ doc.link|e }}">{{ doc.title }}</a> &raquo;</li>{% endfor %}
+  <li>{{ title }}</li>
+{% endblock %}
+{% block breadcrumbs_aside %}
+  <li class="wy-breadcrumbs-aside">
+    <a href="{{ english_url }}" hreflang="en" lang="en">English</a>
+    {% if has_chinese_source %}
+      · <a href="https://github.com/processmission/qemu/blob/docs-zh/docs/translations/zh_CN/{{ pagename }}.rst">查看中文源文</a>
+    {% endif %}
+  </li>
+{% endblock %}
