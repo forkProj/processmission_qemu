@@ -1,0 +1,572 @@
+{
+  "interop/qcow2": {
+    "0": {
+      "source_sha256": "3cca39f61ce7e3ee9c4912b8621b3a1ab12508c2c0e8f2b2f44565063776dc0f",
+      "translation_sha256": "a03fb6bcd9ac587c17107e2f8afb47816debc52ee494af9406994ef0724d7ff0",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "1": {
+      "source_sha256": "32e737dd8cf53a741ee45b52af5d6709cc042bb8676a2215c48cf8b323233027",
+      "translation_sha256": "bca51ba3f0e4fabf9039ceb4c23d7ff9a31de0bb75cf4297eee107a287af3413",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "2": {
+      "source_sha256": "446b67da72131804c2cf57f2301912f75b20e4dbf42b9403b99b8743c9d4b65e",
+      "translation_sha256": "7fca73daa6f2f5bf7caf8f323dcf5225d3586085275d09fe8aa56ad328fcc1e7",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "3": {
+      "source_sha256": "9783cef400d61c03d7988f9831a63726bb329ff1334529bcfb02bd9a1ed8aeb6",
+      "translation_sha256": "1661f35c06e908f6ce56066e9b471de9f89c75adb9f89137d001c2d885c1558f",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "4": {
+      "source_sha256": "12cd9f12c8c048a43d9eb4b6d8f5e0f6e4c7ee788557e51f004dd5f5ca089b57",
+      "translation_sha256": "1e0da93044a9df71384b6ae7a8ceaea1dcf04d9af1347e9317fdd197b8c775ce",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "5": {
+      "source_sha256": "e707ceb7172ea02bfbf4722936329bb6d168ecc90331468bca8f017f3030be12",
+      "translation_sha256": "625b24b9bc888864916a1bde15f1ce18c668fe89de6dfe49f79c91f3fc654cef",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "6": {
+      "source_sha256": "7be5c2f1a8ad393339ee120c623c1e2fa049f9ba9571421df35da24718193ece",
+      "translation_sha256": "e82969f7f91decf48a13a03771014c2400e383bf7fd14df42b681cf0ec7c657c",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "7": {
+      "source_sha256": "99aa80c21eb61146d8d4cc1b35da5094305c6310b2ba0186578faaab4293ac6e",
+      "translation_sha256": "32128e103baf3d3870373a9c3ebef93d3806be5d892e2e3b5a430ad5a6901c86",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "9": {
+      "source_sha256": "3502f10dab0cd26069ce3d96955a9ae1d752a6ecf7d54cbef3bd3f9489b904a0",
+      "translation_sha256": "0867d40b88835263643a08fb35fc4e4f6281cb6b1b42cb2d09e730363388524b",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "10": {
+      "source_sha256": "7c72c03819846856869d7986ece94a3be0c1555ca0623c738f034fccaa8b5901",
+      "translation_sha256": "6d357fc404931b8db5ce3003180f281f865258f17a7265920f04934de4d64ca1",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "12": {
+      "source_sha256": "4c62dcb942e1d6c2c4a992683524d7b1f4397b6cadbac0827d32555910662f6b",
+      "translation_sha256": "5bf07a8b466b32441bb9920bd67c6867063220838a6f36f1924bc32739e98e6d",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "13": {
+      "source_sha256": "8e98ad346f0245312bcea419db41ce35beb73002aa77ceb7dd4398bd6aa7aa39",
+      "translation_sha256": "e240bf7cca7e38f94f750dbc74664d6fa2d3d44a3ff573464d341450ab41530f",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "14": {
+      "source_sha256": "119c41fe817d3f4baeeec8854f9d15df71196befe1dcf106f2b747b1c7fbe798",
+      "translation_sha256": "d8b6fd57cbf0b1d0d5306d99475488b4be990718ab086d397dcf24736b6693d3",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "15": {
+      "source_sha256": "803cbad5c9474457a6663352cc461b055006bd807d0a20f0ed39e72e627d8f04",
+      "translation_sha256": "7667fef81e0058cdb9a4815e50dfc17587c72e0d942d8b41bf3b73fda5a6f766",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "17": {
+      "source_sha256": "f1c944dd8751f52976415d5f852cbb3e369fd3af3669a346fd0d3cdd546499b6",
+      "translation_sha256": "0237747bdd34c5065e3ad775b5b31b40d88d0793539deb6df58826a079ef9a9b",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "18": {
+      "source_sha256": "057908d2b28c2766b9a72908fa8b8bcf996b22dbeb972a6349cb34d05fa50e53",
+      "translation_sha256": "02e93fcee2a75b1b0e3dad92354eee89b7c8e36c6ed78d956cdd11847c990ea6",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "19": {
+      "source_sha256": "084c4d490977e7fe61d0a4eb288ed583dbc7f7f6f3a332cb680a93efdaa6ba62",
+      "translation_sha256": "f7dc7bc0cd6c3b05436d1aaffda680bfa30e523526ad2dc3dd254a674be1a173",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "21": {
+      "source_sha256": "b08a4e82f7772a2774915cfd9d5d7ab341eaf0c801431adaf85b218fa5c8f420",
+      "translation_sha256": "70bfd837d9b618677d1cb37f02158f2514a36b2a25a94b2a2d58bd3fad83081e",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    },
+    "22": {
+      "source_sha256": "d799121cb36b4df4e27203176113cb412fccf8ea2d31dab9c5a4273983e29808",
+      "translation_sha256": "a538a17fd30cb509f40d6914984fccf4ae27b19b0f202f9b663624ff13908a00",
+      "reason": "手写磁盘字段规范或布局图中的解释文字翻译；偏移、字段名、数字及位布局保持，实际计算代码原样。"
+    }
+  },
+  "specs/acpi_hw_reduced_hotplug": {
+    "1": {
+      "source_sha256": "30868cbbf8a622853b128ca3b5e73ebce8698da163522c77fcf8226bf80fdf52",
+      "translation_sha256": "f2eb262bbb1771473a2e371a87dcd3db9345987a6491fb8b791ef10ab7d86e14",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/acpi_mem_hotplug": {
+    "0": {
+      "source_sha256": "48b78e1efffe71761ec96aba3b183b6faf24db390b474bb4070d7af1fa854357",
+      "translation_sha256": "d74956fb73da695a1134b87e2a5d5e4e3f4c4557a5f7367ca99b7c82cef749d1",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/acpi_hest_ghes": {
+    "0": {
+      "source_sha256": "37e50d57e50ece4462304dc95e1c432c52ab6386b13f6dee11fea70d48f2f636",
+      "translation_sha256": "85f4375fd12f351b6519cb53a27dde3eb3c974896d0bd06f67aae965ad06e920",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/aspeed-intc": {
+    "0": {
+      "source_sha256": "473962a10a6dcfebbdcfcb4b4d598967718c248a579a0fb5b4e5367442e5dab7",
+      "translation_sha256": "0a020f7ce747cb1160c4b47ca6c0d9c0d8ef8d1db0c8607725eec08d1e2e4ddc",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/acpi_erst": {
+    "0": {
+      "source_sha256": "fa1b4e033aa3f540211e25f3d5ccbd4ea0a24dd99d31f70f5c0a2b5c8710f528",
+      "translation_sha256": "4d2106b343c1c39ad026cb53e8284037ab89ec661c513a0559df8e0739119dec",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "interop/parallels": {
+    "0": {
+      "source_sha256": "b1cbf3ac5b16f519a1f164304f4193d472df4c3107a6eb203be7fdb6cc8eaca5",
+      "translation_sha256": "3113766a5086debc308483efee9e66108ce1555a1cb0e62dbe913c24452db129",
+      "reason": "手写文件格式字段解释翻译，保留字段名、偏移和数值；两个地址计算表达式保持原文。"
+    },
+    "1": {
+      "source_sha256": "ca05957d197db184cd0e223f4e86e4a012e06bca05b3499bf010dc5b66955174",
+      "translation_sha256": "f4549221d35aa00888f14c6dab1a6a932e79be2c0ee0c4b1d2343b3b8cfc07ea",
+      "reason": "手写文件格式字段解释翻译，保留字段名、偏移和数值；两个地址计算表达式保持原文。"
+    },
+    "2": {
+      "source_sha256": "823649bd4b3ec7065093757d056172e44dd23f797d5592911f50522473fee307",
+      "translation_sha256": "5dab272558c67ac7f76bd7e7d240da7c2f1dfb924937279dafa26823143a47be",
+      "reason": "手写文件格式字段解释翻译，保留字段名、偏移和数值；两个地址计算表达式保持原文。"
+    },
+    "3": {
+      "source_sha256": "d14470330e08442fcdfa08ebbfc4eef4257945e94cf10b9b7a2cd7275ce4014b",
+      "translation_sha256": "27240551aff7aa927de98dd30f284e538963afc07e646a12ccb1b6c94eac503e",
+      "reason": "手写文件格式字段解释翻译，保留字段名、偏移和数值；两个地址计算表达式保持原文。"
+    }
+  },
+  "specs/ppc-xive": {
+    "0": {
+      "source_sha256": "04a34a5ee7ed472c49d8d469c752122876d30459d9d629424cd85c3af8de1f3a",
+      "translation_sha256": "b7aa26353848f17d6632535b40cc52a0372d1ad55952284f96713add135d1bd0",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "1": {
+      "source_sha256": "869f941467d260dcc2643617fbaa75a8851e7ef376e0c1aa11fa7912b0269f8f",
+      "translation_sha256": "c1375120313655aa7f2f30f927f46d77142a0a8c638af0799ad498be290598be",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/vmgenid": {
+    "1": {
+      "source_sha256": "128a5aea7b81bac6326920cc462e1ebcb435ff75b1908451cb5dcdab6fba0a0f",
+      "translation_sha256": "ec7679d1e8eea4e7085a584a151c05bee86b5fbe228a4838ea0333d4dd1e12fa",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "interop/live-block-operations": {
+    "0": {
+      "source_sha256": "c297feeb654dd4df531f9b2444394935a70c4e20cf64714883e2114e8e3ee1f7",
+      "translation_sha256": "e4a093ddbe890612ecca7e9129be2cecea76806f4d092c38f9cc839b1624cbf4",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "interop/qed_spec": {
+    "3": {
+      "source_sha256": "b4447a749181925dc8e59255a491b17779ed2ccf78c50606f1aa2634baa6024e",
+      "translation_sha256": "0314dc4a92c9452d459b314a6c5a2a67316200f3fe37a17b5383b47f7665c4e3",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/ivshmem-spec": {
+    "0": {
+      "source_sha256": "e728dea1d64f326a0018245ad3c3f4b01a134623e5338bc9d71774c38f0729ff",
+      "translation_sha256": "5d3153e8a4f08ec0d1316334734ee0c3787275a0f14282f87ee69a61422facd3",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/tpm": {
+    "3": {
+      "source_sha256": "6da1cc026dabbbdde4c24e5f16cca71d4334f1032765c5f5e2bb0b94c4f0cd36",
+      "translation_sha256": "b615278ec6917b71cc64a058ad9ba8a3ab9b21f5fa3585379a4bbbc723cdbd29",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "8": {
+      "source_sha256": "3139a3fd501363065cd718548ac584fbfa54889e4fcd26a61a94f3e513589a51",
+      "translation_sha256": "c9b328269f38d3d98f842f84f40d76353e7c5efb058519e455c012b26570658c",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "10": {
+      "source_sha256": "6da1cc026dabbbdde4c24e5f16cca71d4334f1032765c5f5e2bb0b94c4f0cd36",
+      "translation_sha256": "b615278ec6917b71cc64a058ad9ba8a3ab9b21f5fa3585379a4bbbc723cdbd29",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/ppc-spapr-numa": {
+    "0": {
+      "source_sha256": "067c1ed30c334400f6d9604f8eb28b887c23857bc6f84a18d5f3125cc6d2f303",
+      "translation_sha256": "ab4dd7f21b7d0f6b694e341cb8f8c49adb36cb774cafe21ac0286c7476b8c956",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "1": {
+      "source_sha256": "1226bbb840d8af3523a41f030914062914ab0509d6fbd33e18a931159926de4b",
+      "translation_sha256": "9241dee536fd07013a01e390453735abf05767806910b4a957a7b9b80b02ade2",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "2": {
+      "source_sha256": "aa671d7d544f9ad1183ac7dd848e6b19a69303d9202a295dfd8498be730d9919",
+      "translation_sha256": "92a045ea628aa50ed640f2e1149ea0c11066022835c861208817c30149cc5927",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "3": {
+      "source_sha256": "70078ac0ff838ad98d285c97e32f3670c81e251abf8548d295d0167be488daf3",
+      "translation_sha256": "698f4ae07f710d17fb916e059958b76fc87c257fbc1250518d6e7876bdc62dcd",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    },
+    "10": {
+      "source_sha256": "1b708ee186c4701f50b8a2821a83bd41a2c050f31e647cfdb05eafe2d6d8f528",
+      "translation_sha256": "b1bd8a575165d970aa4ad2f4872585774648c05e18d3f7b6fdcaa69a8a00daa2",
+      "reason": "手写硬件接口说明或ASCII流程图中的自然语言标注翻译；数字、寄存器标识与连线布局保留。"
+    }
+  },
+  "specs/rocker": {
+    "0": {
+      "source_sha256": "5b6da564d5f4766042f762f6e88586551dfa5703da0ddfb4281133733cb236ad",
+      "translation_sha256": "a5fe44b5806fc61fae0d34f88eafc4c93bd90fb3c751d22cf8028f6ebbf84b63",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "1": {
+      "source_sha256": "b822e9f7333a38275ee910e1ad63ef880bfafd949707fca1b48ce5ed6a5bc9d9",
+      "translation_sha256": "34544ba8beb29a61e219bb4e384e99eb2f8755b5c770bd93b431d4b7c860e074",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "2": {
+      "source_sha256": "373cf928930fe5478d51563b59375e509b97f7a094c782756d4a2673eaf362eb",
+      "translation_sha256": "7bfd12ddea4a5bd457713c326eac707698809a8461ed2ce896038a57fead5c2a",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "3": {
+      "source_sha256": "3c8d54fb99ba6d439b459786d4ab8a5acaa281b8541dbe483db5fd3a0b64d51d",
+      "translation_sha256": "ac2ccc36a1a527dc66e92a6610ba4b43b2428b8ec8685d52c2e0fdde04494cf0",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "4": {
+      "source_sha256": "6b4d07407b9abeb331420afa57dbf989988a6f47d2c614517bac40bec0eb6cc2",
+      "translation_sha256": "2738bed1627ec4f53d75632ec1274c1028f7f516f4064750baf7f53e18ac6d13",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "5": {
+      "source_sha256": "99e1c42f45d923b58888b2580d1a44e6d01df3c56b18d29a5c0f9fa8e7bf4800",
+      "translation_sha256": "5567b6b30b39586a2f7cad68893e5dbf5f29db21718ff4bdf7e51302f8a839e4",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "6": {
+      "source_sha256": "043ab0a4ad5dc310adc3f6eaac314c5df868f2e1d85a6c80440824274158f295",
+      "translation_sha256": "406089a7d415e3abf6c15308e44c9cc97ba6b852bec757154b2cb4a109e4f3a1",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "7": {
+      "source_sha256": "5b099ad0dc6874c708c5f046f68866be302882e495bc98e2f8181fa49df9d7ca",
+      "translation_sha256": "a1a0f5ff4f1aec9819fce8095b16227f9759ce8233e7113159816d2759e6f7e0",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "8": {
+      "source_sha256": "bdbec292d65d530b501bef569376d1d7cc602cc856d43d542d86687255f81707",
+      "translation_sha256": "89ca00196ebda0b804b1ec88ad7df7613f62e7ea11ac5769670a1c97b079f1bd",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "9": {
+      "source_sha256": "d30164fa3980b3c8bc34c3953656969239c69ed3099e3182f3b756bc5c59998a",
+      "translation_sha256": "805cd35b863326345aedc540374326fe06167354bbc8cff2ad59d57c15dd00dd",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "10": {
+      "source_sha256": "6cf071ed9e75514d97f7f80ddb05f6dddad70c45768f56a5fe3a8d245c284fad",
+      "translation_sha256": "db4cb1eca9864b302b61d650137622a61a57636bec77ad5296c94651d86bb792",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "11": {
+      "source_sha256": "90e1fcc7c8933fa03e6412fd1981ecac7e3e6e073dde15ed9232cbf74902ff91",
+      "translation_sha256": "8d422cdc77a03e6213a7ddb4ad5610bf5de3a2e2e87151c34a7336ebaea9ef46",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "12": {
+      "source_sha256": "679407b0eae18b24230afe7ca45988fda95a2e5f369062c85416c73187d45170",
+      "translation_sha256": "426616e7a12297d6d8b8428f2f70e6f3afa6b64058144d74e648e249d3475f47",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "13": {
+      "source_sha256": "168717285237608bce2f9f5d43dc8025f6296964676146a789d821d5b7bc6cbc",
+      "translation_sha256": "dc9721d8062e8c371e48cd0045e1edcd66efb678c2d153f04a419130a0131e84",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "14": {
+      "source_sha256": "973911decd57a01f3bb833fd918c67fc1e971dd6097dcb20ab15cdbb5c858f5b",
+      "translation_sha256": "17fc4eb1ea4fc9c9f7850bd52a83331623a7d067dbb6a725f2d785aa31fd22bb",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "15": {
+      "source_sha256": "1ddf919b333b1c2025a7d46eea6e4e1cccabdd7b6f96fd57305bfe123ea7c154",
+      "translation_sha256": "cb3fe8a04bce7fa3986badf951c5764c314e9d9e45dcc57bb8e4dcc639627843",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "16": {
+      "source_sha256": "ef1fbc02fc711452a8e864f2bab406a1448140d62c8e46b5a9738761e0c9956e",
+      "translation_sha256": "22dce46e2f606e8072979be9de6e609452fa8729cd6e68779cb83098ccfb3ba5",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "17": {
+      "source_sha256": "b66bd7aabcd809cf4fc2cbf29d487c551767a538dbaf785bd20fbdc7f5678b2b",
+      "translation_sha256": "9abd1f19f0e05d4eae0917a0d1762e1e4564bf93a96aa7ea0814a30901dd2829",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "18": {
+      "source_sha256": "9dafab3fc6cb04fcf7fd04a72ea3ca2d299f99757d097afd79f4828e8dd710de",
+      "translation_sha256": "556835ddaf3b51b4471dad597cb72173ce35900431b749f110710bca2c29593a",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "19": {
+      "source_sha256": "3cf71c2bb93f1d62df2b1914a2b86cea74ac225a5bb326480a15c3f5c11cabe9",
+      "translation_sha256": "35110d3ca1425d8487fccc86bba7a1e0091708679f22eb96a87606dca4a322b5",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "20": {
+      "source_sha256": "9aa0fdb16c0c5da2f43741d5fc0d3a734c4f757a2b5f5e0cd35a4d8ba4d99aef",
+      "translation_sha256": "60256d78360a147cf1e23da54463172a656dde50d166fa854b8677de46108296",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "21": {
+      "source_sha256": "faa46b1e4aa6c79e762a8dace0ce1aa499ef7c6cd325831294daf767b5cc7c1f",
+      "translation_sha256": "bfc8308ecab7b80a3451d63be7824257d28dd8458a910710d97d6f9c30381cec",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "22": {
+      "source_sha256": "1d1360fd08f4779a764e062c18c04cc083a91e44708a0cfd42a382e7d954e67d",
+      "translation_sha256": "43455e03b5dd7e7939444450948e7de751d3ac0d1ab723193405e788b048eb04",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "23": {
+      "source_sha256": "c064d11e1340a789873e722818dc2fa07d7e899f7361a470462304eb4c259bc2",
+      "translation_sha256": "6bb5beeda78527c19dac4889bd51db450b59bd1326fc5f399d9c108cd6e5001f",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "24": {
+      "source_sha256": "9f2ef14b40340c868632ede6dc958fe680bbf2e3360a63f547cd02f61e57adbf",
+      "translation_sha256": "cee0cb41a647ee22833507d7c2acf517e71225dbe5827a06667950c09d7b65f5",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "25": {
+      "source_sha256": "158ea9b3e11cac4583193783ed9cf484d4f9b0cc18bc678b66521ac841546a97",
+      "translation_sha256": "ed3ad7fbc45769bfb042ad9b4787f4b37b2f2866cbdef1424f90659690e50141",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "26": {
+      "source_sha256": "ad893272d96e347b3bf6e2b5aa6c78b544ff4ce4d654119f75bcb5f47b63011d",
+      "translation_sha256": "bfeff668f2c47ac90282aedcefbb6a7c2a7f76a32db0f2da18fbc133b3f0d4e1",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "27": {
+      "source_sha256": "3398cadd90f0f76f1bc234ee28a6a7e06ddec4f13750834e81d6c6d0fef5f056",
+      "translation_sha256": "25f5cb9dd09de5d23fd4cff5c3366b9340cdc36067cf84123e55877bc2017d72",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "28": {
+      "source_sha256": "b0a6250e6c384efdcdff6ae9f81a83f15c8fd1e52aa2bbbcae1e7ec722c45280",
+      "translation_sha256": "c47a80635e07b588a54769640009a928d89f1ca7b48693729d3263a1e014bfe2",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "29": {
+      "source_sha256": "37443957fbfccc8ecd98ce314cb2bd9d994ca2eabc30a9ea2a7a42e3443a10d3",
+      "translation_sha256": "fd6b33488c79643689adad0a9b75a4ffc9f02744ca60f1695e917343367ab120",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "30": {
+      "source_sha256": "4941b9909777f5c4acda98d8c8ea4521a46dcf41e49e430d13f5b709b6e88c2e",
+      "translation_sha256": "f5ceec67bbf027b857d9f51dec85b957547d31c255945f63de4eeeb2b756c55e",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "31": {
+      "source_sha256": "6cd3210c4f49d1f3add5909fb0bc3193f45f8ce750da77c6c67980d24dd487e4",
+      "translation_sha256": "d54c0f28ab1cf95511da73d2571c3336a3a656e7cda573272f28b8fa87049ed2",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "32": {
+      "source_sha256": "fd59ea9162655fc5cb1b89d8e6d301a80b0150d3476623adea5dfd010bb14908",
+      "translation_sha256": "a825b8880bd48259fb39dc64475f31e9ffc83a2310ff86ac70d6a49bed1c6d95",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "33": {
+      "source_sha256": "18610a8d8835e401000bc918561d8fe6599382493c1ce4b659e9cda1a884a756",
+      "translation_sha256": "a01d299df88e580f0b32f1bc6bbfb82bf039d88f9856313aa2223d520d9c5951",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "34": {
+      "source_sha256": "5c8ec74c8c09676cb14d6a2921914ad87246cf3cd03e29dea0ddc0834a6566ad",
+      "translation_sha256": "2e49583262eb0136e1d0fe256d807412c300431e9cf029fd13d144e5de9eeeba",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "35": {
+      "source_sha256": "f5ec83dca90b8554201366e1cb8d4f4e7ae2c4cb38ddbd543bececf71ceb3d93",
+      "translation_sha256": "c43c418c608a8693771a3ead8383ef45a12888f5c113712db4ae118fbca56cf2",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "36": {
+      "source_sha256": "4681e9780231fecde8e3c48407ddbfbc2c0ce7b1f1fe90089c47133cc66bef98",
+      "translation_sha256": "95330d26f5a81bc5414265017e72f53d35a938e3428ed87f448f77e7e9c18d48",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "37": {
+      "source_sha256": "0cf2f16a16b71ea62e3bc7fa306beca7d5102ceb49343e50657897e306b06c89",
+      "translation_sha256": "dd877ada533e9220fb2fac3fe5787ac13e016a59fee808bdb5c77dc9f4711cea",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "38": {
+      "source_sha256": "0d9f8c6f3df145ade27877f7bac956a9f6bd259f823496af6d94e064e828d307",
+      "translation_sha256": "d0cd452dfe33e12155c4b02f692e64f88d67c3710c58952c83c2b406a51e2dcb",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "39": {
+      "source_sha256": "0219948a64ade6bf04d80c367cb8f18fede3c281ce812c75d22b4b418f745fbc",
+      "translation_sha256": "5351a36c8e79048a2f876aa9d9c20fd444cb0ac31a6225708e2d19d7f6ecbd19",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "40": {
+      "source_sha256": "98e30a9861f51544a77ee6a7a5dcd29914d06bc509d239190d1649045c40457f",
+      "translation_sha256": "803621e2f6be3ab652c2225408f428fc9d034cc5e39c5716ae5134f3537ffc6f",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "41": {
+      "source_sha256": "f43c9a0adb6ecbb1634800154f677a60dfc80be7610e17586da3caad9bfb6504",
+      "translation_sha256": "91e12f159d355c53a426ab100ec70f98e46300f75e19c72897b606a2aaebaa4e",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "42": {
+      "source_sha256": "e029eb504182bef2b24f859370956797a8b8b98542a99079a119d046058ca4b9",
+      "translation_sha256": "7032bba477715255ca05fb751fb7c084f521a51021cf5807d6680f397cc245bd",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "43": {
+      "source_sha256": "ec398a4a4b5a8307c3fae30075e302c2fdde8103dac99e51cb02f8ce38bf6511",
+      "translation_sha256": "45e49c2168b9eaa394c28ea49103a52177cdb4a9c53dd6d3298b349c246f4cd3",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "44": {
+      "source_sha256": "8edc8df74e17a5666c7e5eb95a1bee511db69ef6862d872ab5a6e9c67a90af57",
+      "translation_sha256": "75a66a7e4abd1b0573cc114761b2c4595552331afe94d050838acd622fea628b",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    },
+    "45": {
+      "source_sha256": "a60315baf6bc4560f5941e4ca68c5bfa0f76c9d1243f7c31ca306a5c362c0ad4",
+      "translation_sha256": "240c8092ce731722a41b352e84950d277497961c1bbb1acdfc7773f931c49f9f",
+      "reason": "手写寄存器/TLV字段表、错误说明或示意图标注翻译；字段名、偏移、宽度、位布局与数值保持。"
+    }
+  },
+  "devel/migration/postcopy": {
+    "0": {
+      "source_sha256": "44a2a912798a87d30403c5e5748a4d07f55d99c88028f965a9308ba276d427bb",
+      "translation_sha256": "e7e28d6aae2ac18f18f16f771e3e46073ba75863b350a81e8331fd84a678c9ea",
+      "reason": "手写迁移线程时序图；译线程及页面标签，命令标识符、序号和连接布局保留。"
+    }
+  },
+  "devel/migration/vfio": {
+    "0": {
+      "source_sha256": "e98d032fbd34e619322febb5a4cd2970eb42f3a99414ee4252774900f55d3c02",
+      "translation_sha256": "199ee79bdc177d4b0ea53d6cddb3f0a353f5cbde6ad151f47076d4349f5bf124",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    },
+    "1": {
+      "source_sha256": "aed5900c9b982e4d6db677f234fb15c68a46ac9ba388a5c466a808cb8062269e",
+      "translation_sha256": "c37d05b23e2a3af16f4c34ba50e0177429d15e4d8f3696f485e01a7bab4837ce",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/clocks": {
+    "0": {
+      "source_sha256": "ff68f6dcae8ec96469111f5dbdd1993c48db8524acf7b23c23e1d907d232442e",
+      "translation_sha256": "88b0f816d9641c787fcfa7bd69a0af3898785aa9218c3a6cab036e3a43a01db5",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    },
+    "7": {
+      "source_sha256": "cfeca694fbdbca9bf93c2d7592c9d900ca330133fe832f284debe3dc40c2bc6a",
+      "translation_sha256": "2ae4702ff000147a687c0ea73b85f6fe7b1776f147846936478a8aaa75c0ad3a",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    },
+    "14": {
+      "source_sha256": "0d62e9bbc3c74e7f3d3c7c9f4eb8e6b4b8560073cfee5c18c5a38fc5950debd5",
+      "translation_sha256": "f0cebed033ba5e80386bbfaf46ca40d56668ad216460c1ed0479fb4d7f1d5417",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/luks-detached-header": {
+    "0": {
+      "source_sha256": "66f20469875e645194fc251254d6c04681af7d088a09efff30c57a65ccb5f6df",
+      "translation_sha256": "80bad8bcbc989d9bcfcc94231060ea8e4d533f7137503b523ec8d000dd01e483",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    },
+    "1": {
+      "source_sha256": "58472c239e21cf9645f76dd9a578465d33c051708840fdc1d4abb1a9380f0265",
+      "translation_sha256": "79699c0e8af6dce0c66072e5274834f656a4a5e0801fb7b37deae4eb972b10f4",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    },
+    "2": {
+      "source_sha256": "b8bf9db86e28f4f17c44a178dd45a8966ffdc6736c78efd382deaa0f9346e0aa",
+      "translation_sha256": "56db2d52d4467e77ef0535f75e7d155c621c9af55ea8a35dc0aa1eb7de245981",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/migration/mapped-ram": {
+    "0": {
+      "source_sha256": "594dc1e74746489257904ae5869a0149c407f1156b58289ecaa4bca3a9804ce0",
+      "translation_sha256": "c0e37691f5881c923e30ad0c0654805cc0dbed5064d870b40621e822a3a66829",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/migration/qatzip-compression": {
+    "0": {
+      "source_sha256": "b2503986be669270297757587f6f786d3c8fe733a2f135c3200367000b6ab8be",
+      "translation_sha256": "b10b8f9cd5ac96eaaeff0f3cfd06685425bc1c38fbc5d93a4d3457ced36d9269",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    },
+    "1": {
+      "source_sha256": "ea4c4a9a4fe646e92570a2a825656a8ddd3288ccf8e6079a7b92e4bab11b7514",
+      "translation_sha256": "2e70d9b2928d8fde46709f19b22d46ac2614066ce5ed0db84d46b18881f8c125",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/migration/qpl-compression": {
+    "0": {
+      "source_sha256": "3b19c9c47c0957214a16acb23464a3b37a1dac1265078563a161a41288453c9d",
+      "translation_sha256": "df3c8761516c460528f45d8cf3ba260cd479b80168e4d646cf831c36cd7c19f2",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/migration/uadk-compression": {
+    "0": {
+      "source_sha256": "892ec67cc0df5bda0b848644974ef36d47d8c728077f9482fcdb6b0a00ab1b43",
+      "translation_sha256": "a0477eb05451183e6aac9073763a569929b5890cfe94e0f1654a2639105a2b12",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/vfio-iommufd": {
+    "0": {
+      "source_sha256": "9d147ba15e2cae2736c7531a100eb17261dfc887a27246b96ec3b3dc5edff82f",
+      "translation_sha256": "0f890ddc99944fb99dbba5d47ccc19a5e695b8dc42426b5b3319511b1f1439db",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  },
+  "devel/migration/xbzrle": {
+    "0": {
+      "source_sha256": "5d607258a89b2ce2bb0b530479fc9e1c42c97d95c4bd8c4364f1ea3dc9469789",
+      "translation_sha256": "75cc9191117b1ef8d7451351d8f536f4671a6d29706dbe0f3f12d810d07152d7",
+      "reason": "手写架构图、流程图或格式/性能说明；仅翻译自然语言标签，保留数字、代码标识及图形连接的显示列。"
+    }
+  }
+}
