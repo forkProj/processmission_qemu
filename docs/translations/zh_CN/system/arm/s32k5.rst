@@ -1,0 +1,109 @@
+.. SPDX-License-Identifier: GPL-2.0-or-later
+
+NXP S32K5 板（``s32k566-cvb-r52``）
+=====================================
+
+概述
+--------
+
+``s32k566-cvb-r52`` 机器模拟采用 S32K566 SoC 的 NXP S32K5XXCVB 评估板的 Cortex-R52 部分。这是用于 RTOS 启动冒烟测试的最小板级模型，包括为 ``s32k5xxcvb/s32k566/r52`` 板目标构建的 Zephyr 镜像。
+
+模型不追求完整覆盖 S32K5 汽车 SoC。它实现了已验证 Zephyr 启动流程所需的 CPU、内存、中断控制器、LPUART 控制台和少量模式进入（MC_ME）寄存器。不应将它视为对其他 S32K5 固件的兼容性承诺。
+
+支持的设备
+-----------------
+
+``s32k566-cvb-r52`` 机器目前提供：
+
+* 最多两个 Arm Cortex-R52 CPU，默认启用一个；
+* GICv3 中断控制器以及架构定时器中断连接；
+* 映射到 ``0x08000000`` 的代码 MRAM；
+* 位于 ``0x21000000``、``0x21080000``、``0x21100000`` 和 ``0x22000000`` 的 SRAM 窗口；
+* 位于 ``0x40498000`` 的 NXP S32 MC_ME 寄存器子集；
+* 位于 ``0x400e0000``、连接到 QEMU 串口 0 的 NXP LPUART0。
+
+MC_ME 模型覆盖 Zephyr SoC 初始化期间使用的分区和模式更新握手。LPUART 模型覆盖 Zephyr MCUX LPUART 驱动使用的轮询控制台路径。
+
+内存映射
+----------
+
+机器提供以下已实现区域：
+
+.. list-table::
+   :header-rows: 1
+
+   * - 地址
+     - 大小
+     - 说明
+   * - ``0x08000000``
+     - ``32 MiB + 0x100``
+     - 代码 MRAM，用作直接内核加载地址
+   * - ``0x21000000``
+     - ``512 KiB``
+     - 共享 SRAM0
+   * - ``0x21080000``
+     - ``512 KiB``
+     - 共享 SRAM1
+   * - ``0x21100000``
+     - ``512 KiB``
+     - 共享 SRAM2
+   * - ``0x22000000``
+     - 默认 ``1 MiB``
+     - CPE SRAM，由机器 RAM 属性提供后备存储
+   * - ``0x400e0000``
+     - ``0x4000``
+     - LPUART0
+   * - ``0x40498000``
+     - ``0x4000``
+     - MC_ME
+   * - ``0x43000000``
+     - 由设备定义
+     - GICv3 分发器
+   * - ``0x43100000``
+     - 由设备定义
+     - GICv3 重分发器区域
+
+启动选项
+------------
+
+使用 ``-kernel`` 加载针对 S32K566 Cortex-R52 内存映射构建的 ELF 镜像。加载起始地址为 ``0x08000000``。默认且唯一支持的 CPU 类型是 ``cortex-r52``，因此 ``-cpu`` 选项可省略。
+
+例如，可以通过以下命令启动启用了 UART 控制台的 Zephyr ``hello_world`` 镜像：
+
+.. code-block:: bash
+
+   $ qemu-system-arm \
+       -machine s32k566-cvb-r52 \
+       -cpu cortex-r52 \
+       -display none \
+       -monitor none \
+       -serial stdio \
+       -kernel /path/to/zephyr.elf
+
+
+QEMU 的第一个串口连接到 LPUART0。对于 Zephyr，要看到控制台输出，镜像必须启用串口控制台支持，并将 LPUART0 用作 ``zephyr,console``。上游板级 defconfig 可能没有启用控制台；这种情况下，镜像仍可启动，但预期不会有 UART 输出。
+
+机器没有固件加载器、闪存编程器、SD/eMMC 控制器或网络设备。因此，不支持 U-Boot 镜像、SD 卡镜像和 Linux 发行版镜像等启动介质。
+
+已知限制
+-----------------
+
+机器有意将许多 S32K5 外设设为桩实现或省略。特别是，以下部分不是完整的硬件模型：
+
+* 时钟控制器寄存器块；
+* SIUL2 引脚复用/GPIO 块；
+* SWT 启动看门狗；
+* xSPI 控制器；
+* eDMA 控制器；
+* 闪存编程、复位管理和低功耗模式。
+
+当前模型适合直接加载 RTOS 镜像，不实现固件启动流程，也不是通用 Linux 平台。这里模拟的 S32K566 部分是 Arm Cortex-R52 实时核心，而非 A-profile Linux 板级模型。
+
+运行测试
+-------------
+
+此机器的 qtest 覆盖构造、MC_ME 更新行为以及 LPUART 复位和读写行为：
+
+.. code-block:: bash
+
+   $ meson test -C build qtest-arm/s32k5-test

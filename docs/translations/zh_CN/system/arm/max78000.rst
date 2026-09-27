@@ -1,0 +1,34 @@
+.. SPDX-License-Identifier: GPL-2.0-or-later
+
+Analog Devices max78000 开发板 (``max78000fthr``)
+=================================================
+
+max78000 是带 RISC-V 协处理器的 Cortex-M4 SoC，目前不支持该协处理器。
+
+支持的设备
+-----------------
+
+ * 指令缓存控制器
+ * UART
+ * 全局控制寄存器
+ * 真随机数生成器
+ * AES
+
+主要未支持设备
+---------------------------
+
+ * I2C
+ * CNN
+ * CRC
+ * SPI
+
+启动选项
+------------
+
+可用 -kernel 将固件加载到地址 0 作为 ROM 来启动。ROM 通常跳转到
+0x10000000 内部闪存的软件，因此一般建议将程序放在那里。若没有 ROM 副本，
+也可使用用户固件中的中断向量表。例如：
+
+.. code-block:: bash
+
+  $ qemu-system-arm -machine max78000fthr -kernel max78000.bin -device loader,file=max78000.bin,addr=0x10000000

@@ -1,0 +1,318 @@
+.. SPDX-License-Identifier: GPL-2.0-or-later
+
+STM32G474 和 ARDEP V2 机器
+===============================
+
+QEMU 提供两种名称采用小写的 STM32G474VE 机器：
+
+``stm32g474``
+    通用 STM32G474VE 微控制器机器。
+
+``ardep-v2``
+    Mercedes-Benz ARDEP V2 板，通过将通用 STM32G474VE 模型与板级时钟、LED、串口和 CAN 连接组合而成。
+
+ARDEP 机器组合使用与通用机器相同的公共微控制器设备。板级模型不会重复实现内存映射和外设。
+
+命名
+------
+
+公开的机器名称使用英文小写。公共 C 状态名为 ``STM32G474State``，实现文件名为 ``stm32g474.[ch]``，不使用 ``Soc`` 后缀。
+
+QEMU 为机器的 QOM 类型添加 ``-machine`` 后缀，并在显示公开机器名称时去除该后缀。因此，公共设备类型可以命名为 ``stm32g474``，而通用机器类型为 ``stm32g474-machine``。用户通过 ``-machine stm32g474`` 选择该机器。
+
+来源
+-------
+
+模型基于：
+
+* STM32G4 参考手册 RM0440，第 9 次修订。
+* STM32G474xB/xC/xE 数据手册 DS12288，第 6 次修订。
+* ARDEP 仓库提交 ``266e0aa36e10b211ed83aa11ab410ac1f5de233e``。
+* Zephyr v4.4.0 提交 ``684c9e8f32e4373a21098559f748f06915f950c9``。
+
+添加寄存器行为前，必须能追溯到上述来源之一。不得仅为抑制客户机错误或跳出固件轮询循环而实现寄存器。
+
+公共 STM32G474 模型
+----------------------
+
+公共模型包含以下架构状态：
+
+* Arm Cortex-M4F，支持 DSP、FPU、MPU、SysTick 和位带。
+* 102 个外部中断输入和四个已实现的优先级位。
+* 位于 ``0x08000000`` 的 512 KiB 内部闪存。
+* 位于 ``0x00000000`` 的内部闪存启动别名。
+* 位于 ``0x20000000`` 的 80 KiB SRAM1。
+* 位于 ``0x20014000`` 的 16 KiB SRAM2。
+* 位于 ``0x10000000`` 的 32 KiB CCM SRAM，在 ``0x20018000`` 具有别名。
+
+CCM 窗口引用同一底层内存，不得表示为两个独立 RAM 区域。
+
+实现了以下外设块：
+
+* STM32G4 RCC 时钟和复位控制器。
+* 系统设置期间使用的 PWR 和内部闪存接口寄存器。
+* USART1、USART2 和 UART4。
+* GPIO 端口 A 至 G。
+* SYSCFG 和 EXTI 控制器，具有编号 0 至 43 中的 42 条有效线。
+* 三个 STM32 FDCAN 通道及其共享消息 RAM，由可复用的 Bosch M_CAN 消息引擎支持。
+* STM32 USB FS 设备寄存器块和分组内存区域。
+
+镜像加载后，闪存阵列为只读。不实现闪存编程和擦除操作。ADC、DAC、I2C、SPI、通用定时器、RNG 和 LIN 帧处理也未实现，其地址范围保持未映射，并遵循 QEMU 的未分配访问行为。
+
+GPIO 端口
+----------
+
+公共模型在 ``0x48000000`` 至 ``0x48001800`` 提供 GPIOA 至 GPIOG。其 ``MODER`` 至 ``BRR`` 寄存器使用 ``RegisterInfo``，接受自然对齐的字节、半字和字访问。GPIOA、GPIOB 和 GPIOC-G 分别使用各自的硬件复位值，完整的 ``LCKR`` 序列会冻结选定配置字段，直到端口或系统复位。
+
+每个端口提供名为 ``pin-in`` 和 ``pin-out`` 的数组。``pin-out`` 是根据输出锁存器、模式、输出类型、上下拉配置及外部输入计算出的引脚电平。没有外部驱动且未启用上下拉的引脚会确定性地解析为低电平。复用功能选择和输出速度寄存器保留写入值，但模型尚不路由复用功能信号，也不模拟电平转换时序。
+
+未建模封装引脚绑定。板级 LED 接线属于 ARDEP 组合层，而不是公共 GPIO 设备。RCC GPIO 时钟门控关闭时，寄存器存储仍可访问，因为硬件手册未规定关闭时钟时访问的确定结果。
+
+系统配置控制器
+-------------------------------
+
+SYSCFG 寄存器块位于 ``0x40010000``。截至 ``SKR`` 的十个寄存器使用 ``RegisterInfo``，接受对齐的 32 位访问。四个 ``EXTICR`` 寄存器可将 GPIOA 至 GPIOF 路由到任意外部中断线，将 GPIOG 路由到线 0 至 10。无效选择值保留字段原值。
+
+公共设备通过 ``gpio-in`` 数组提供全部 112 个 GPIO 路由输入。SYSCFG 将选定电平通过 16 条 ``exti-out`` 线转发到 EXTI。更改选择器立即更新转发电平；EXTI 将产生的电平变化视为普通边沿。Zephyr 在启用边沿触发和屏蔽设置前先路由 GPIO，以避免产生虚假的挂起位。
+
+RCC 的 ``SYSCFGEN`` 门控提供 SYSCFG PCLK2 时钟，``SYSCFGRST`` 复位其普通配置。CFGR2 锁定位和 SWPR 页锁在此次外设复位后保留，但在系统复位时清除。CCM 擦除、内存重映射以及 CFGR1 和锁定寄存器的外部效果明确不予实现。
+
+扩展中断和事件
+------------------------------
+
+EXTI 寄存器块位于 ``0x40010400``。其 12 个寄存器使用 ``RegisterInfo``，接受对齐的 32 位访问。寄存器存储包含偏移 ``0x18`` 至 ``0x1f`` 的保留空隙。组 1 的可配置线掩码为 ``0xe07bffff``，组 2 为 ``0x00000303``。全部有效线的掩码分别为 ``0xffffffff`` 和 ``0x00000f3f``。
+
+``IMR1`` 和 ``IMR2`` 分别复位为 ``0x1f840000`` 和 ``0x00000c3c``，因此直接唤醒线初始未屏蔽，而可配置线初始被屏蔽。这些值遵循逐寄存器描述和目标线映射，不使用与之冲突的汇总复位表。直到源外设和 Stop 模式行为被建模前，直接线都保持不活动。
+
+选定的外部边沿会设置 ``PR``，不受 ``IMR`` 和 ``EMR`` 影响。``IMR`` 仅控制是否将锁存的挂起状态递送给 NVIC，而 ``EMR`` 独立启用事件脉冲。``SWIER`` 在从零变为一时生效，同样会在 ``IMR`` 清零时设置 ``PR``。因此，稍后启用 ``IMR`` 会递送已挂起的中断；启用 ``EMR`` 则不会补发此前的事件脉冲。``PR`` 为写 1 清零，同时清除对应的 ``SWIER`` 位。只要 ``PR & IMR`` 非零，相应中断输出就保持有效。
+
+EXTI 线 0 至 4 连接到 NVIC 输入 6 至 10。线 5 至 9 共享 NVIC 输入 23，线 10 至 15 共享 NVIC 输入 40，通过两个或门实现。EXTI 与 SYSCFG 共享 RCC 的 ``SYSCFGEN`` 时钟。``SYSCFGRST`` 不复位 EXTI 状态，系统复位才会复位。
+
+寄存器建模规则
+----------------------
+
+此系列添加的每个 MMIO 外设模型都必须使用 QEMU 的 ``RegisterInfo``、``RegisterAccessInfo`` 和 ``RegisterInfoArray`` 框架描述其寄存器块，并通过 ``register_init_block32()`` 初始化。寄存器偏移和字段使用 QEMU 的 ``REG32`` 和 ``FIELD`` 宏。复位值、只读位、写 1 清零位以及保留掩码应放在 ``RegisterAccessInfo`` 中，而不是手写 MMIO 分派代码。
+
+寄存器偏移、字段、访问表、底层数组以及寄存器局部回调都应保留在对应设备的 ``.c`` 文件内部。公共头文件仅暴露连接公共微控制器和板级模型所需的 QOM 类型及常量。
+
+寄存器回调仅实现设备行为和副作用，例如时钟传播、IRQ 更新、FIFO 移动、DMA 请求和输出变化。新的外设模型不得通过手写 ``switch`` 语句分派寄存器偏移。非寄存器存储窗口，包括 FDCAN 消息 RAM 和内部闪存阵列，在适当情况下仍采用普通 ``MemoryRegion`` 后备存储。
+
+每个外设 qtest 除验证功能行为外，还必须覆盖具有代表性的复位值、访问掩码和回调副作用。
+
+时钟和复位约定
+------------------------
+
+STM32G474 的复位时钟为 16 MHz HSI。公共 RCC 模型将复位时钟提供给 Cortex-M4，并实现时钟源选择、预分频器、外设门控和复位控制。
+
+ARDEP V2 时钟树增加了：
+
+* 16 MHz 旁路 HSE。
+* PLL M=4、N=85、R=2，产生 170 MHz 系统时钟。
+* 48 MHz HSI48 时钟。
+* 32 kHz LSI 时钟。
+
+固件可见的就绪位和状态位跟随其控制位，包括 HSE 就绪、PLL 就绪、HSI48 就绪、LSI 就绪和系统时钟切换状态。客户机更改时钟源或预分频器时，会重新计算并传播时钟输出。
+
+PWR 和闪存接口模型保留可写配置，并提供 Zephyr 在 170 MHz 下使用的电压提升和闪存延迟状态。复位会恢复所有已建模寄存器、IRQ 电平、GPIO 电平及派生时钟。
+
+中断和串口约定
+-----------------------------
+
+外设 IRQ 按 RM0440 直接连接到 Cortex-M4 NVIC。重要分配包括：
+
+* RCC 为 5，闪存为 4。
+* EXTI0 至 EXTI4 为 6 至 10。
+* EXTI9_5 为 23，EXTI15_10 为 40。
+* USART1 和 USART2 为 37 和 38。
+* UART4 为 52。
+* FDCAN1 中断线为 21 和 22。
+* FDCAN2 中断线为 86 和 87。
+* FDCAN3 中断线为 88 和 89。
+
+USART 模型实现轮询收发、中断驱动操作、波特率配置以及 Zephyr 使用的 TEACK、REACK、TXE、TC 和 RXNE 状态转换。两种机器都将 UART4 作为 ``serial0``，因为它是 ARDEP 应用控制台。
+
+FDCAN
+-----
+
+公共设备在 ``0x40006400``、``0x40006800`` 和 ``0x40006c00`` 包含 FDCAN1、FDCAN2 和 FDCAN3。三个通道分区共享位于 ``0x4000a400`` 的 2544 字节消息 RAM。模型实现了：
+
+* 标准和扩展过滤。
+* 接收 FIFO 0 和 FIFO 1。
+* 专用发送缓冲区和 FIFO/队列发送缓冲区。
+* 经典 CAN 和 CAN FD 帧，包括位速率切换。
+* 发送事件、取消、中断路由、监听模式，以及内部和外部回环。
+* QEMU ``can-bus`` 链接以及活动控制器状态的迁移。
+
+控制器不模拟位级仲裁时序、物理 ACK、由总线故障导致的错误计数器或收发器电气行为。QEMU CAN 总线接受的帧无需物理应答即可完成。
+
+``stm32g474`` 通过机器属性 ``canbus0``、``canbus1`` 和 ``canbus2`` 提供 FDCAN1、FDCAN2 和 FDCAN3。``ardep-v2`` 仅提供前两个属性。ARDEP 设备树将 FDCAN1 称为 ``can_b``，将 FDCAN2 称为 ``can_a``；QEMU 属性编号仍遵循硬件实例编号。
+
+USB FS
+------
+
+USB FS 模型实现设备控制器寄存器、端点寄存器、分组内存、中断状态、时钟和复位输入以及迁移。它没有主机端：不提供 USB 设备端口，无法与 QEMU USB 主机交换 USB 分组。固件可以验证控制器设置、分组内存和中断行为，但 USB 桥接示例没有端到端后端。
+
+ARDEP V2 组合
+--------------------
+
+已实现的 ``ardep-v2`` 机器实例化公共 STM32G474 设备，可以通过以下命令加载固件：
+
+.. code-block:: shell
+
+   qemu-system-arm -M ardep-v2 -kernel firmware.bin
+
+
+板提供物理上固定为 16 MHz 的 HSE 源。复位仍选择 HSI16；固件必须启用 HSE 旁路、配置 PLL，并将其选为 SYSCLK，才能达到 170 MHz。
+
+已实现的板级连接包括：
+
+* PC3 上的低电平有效红色 LED。
+* PA3 上的低电平有效绿色 LED。
+
+红色和绿色 LED 具有固定的 QOM 路径 ``/machine/red-led`` 和 ``/machine/green-led``。GPIO 分流器保留 PA3 和 PC3 到 SYSCFG 和 EXTI 的相同信号路径。
+
+公共 MCU 提供板继承使用的串口顺序：UART-A 是通过 ``serial0`` 连接、位于 PC10 和 PC11 的 UART4；UART-B 是通过 ``serial1`` 连接、位于 PD5 和 PD6 的 USART2；LIN 是通过 ``serial2`` 连接、位于 PE0 和 PE1 的 USART1。复用功能引脚复用不作为独立电气设备建模。
+
+除非机器属性选择同一 QEMU CAN 总线，否则板不会连接其两个 FDCAN 控制器。这样可以显式表示未连接、共享总线和独立总线拓扑。
+
+例如，以下命令将两个 ARDEP CAN 接口连接到一个进程内总线：
+
+.. code-block:: shell
+
+   qemu-system-arm \
+       -object can-bus,id=can0 \
+       -M ardep-v2,canbus0=can0,canbus1=can0 \
+       -kernel zephyr.elf -nographic
+
+
+需要主机流量时，添加 SocketCAN 主机连接器：
+
+.. code-block:: shell
+
+   qemu-system-arm \
+       -object can-bus,id=can0 \
+       -object can-host-socketcan,id=host0,if=vcan0,canbus=can0 \
+       -M ardep-v2,canbus0=can0 \
+       -kernel zephyr.elf -nographic
+
+
+主机 CAN 设置请参见 :doc:`../devices/can`。
+
+启动路径
+----------
+
+两种机器均从地址零处的闪存别名复位。两者都不会仅因为 ELF 段加载到非零地址，就更改 Cortex-M4 的初始 VTOR。
+
+通用直接启动流程使用链接到内部闪存基址的 ELF 或原始镜像，无需引导加载程序即可验证 CPU、内存、时钟和控制台路径。
+
+例如，在通用机器上运行直接链接的 Zephyr ELF：
+
+.. code-block:: shell
+
+   qemu-system-arm -M stm32g474 -kernel zephyr.elf -nographic
+
+
+同类镜像也可使用 ARDEP 时钟和板级连接运行：
+
+.. code-block:: shell
+
+   qemu-system-arm -M ardep-v2 -kernel zephyr.elf -nographic
+
+
+默认 ARDEP 应用配置启用 MCUboot。其闪存布局为：
+
+* MCUboot：偏移 ``0x00000``，大小 96 KiB。
+* 槽位 0：偏移 ``0x18000``，大小 192 KiB。
+* 槽位 1：偏移 ``0x48000``，大小 192 KiB。
+* 存储：偏移 ``0x78000``，大小 32 KiB。
+
+槽位 0 应用向量位于其 0x200 字节 MCUboot 头之后的 ``0x08018200``。因此，要验收未经修改的 ARDEP 启动布局，必须使用真实的 MCUboot 与应用镜像。直接链接的启动验证镜像可以作为诊断证据，但不能替代 MCUboot 验收运行。
+
+``ardep-v2`` 加载器遵循相同约定：原始镜像加载到 ``0x08000000``，上限为 512 KiB；ELF 段保留其链接地址。机器不会重定位仅含槽位内容的镜像，也不会合成 MCUboot 跳转。
+
+因此，将 MCUboot 和应用合并为一个 512 KiB 原始闪存镜像的构建，可以使用同一加载器：
+
+.. code-block:: shell
+
+   qemu-system-arm -M ardep-v2 \
+       -kernel ardep-v2-mcuboot-application.bin -nographic
+
+
+示例验收
+-----------------
+
+以下固定版本输入已在此模型上运行：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - 输入
+     - 已验证行为
+   * - Zephyr ``hello_world``
+     - 在 ``stm32g474`` 上直接启动、设置时钟、使用 UART4 控制台并显示 Zephyr 启动横幅。
+   * - ARDEP ``led``
+     - 直接启动和 MCUboot 槽位 0 启动，板上红绿 LED 电平交替变化。
+   * - ARDEP ``uart``
+     - UART4 交互收发；输入 3 和 4 分别产生 9 和 16。
+   * - ARDEP ``gearshift``
+     - 外部 PC13、PC1 和 PF1 电平产生位置 0、1、3 和 7。
+   * - ARDEP ``digital_input_interrupt``
+     - PD10 的两个边沿均到达 EXTI，回调在 PD11 上镜像该电平。
+   * - ARDEP ``can``
+     - 两个板级控制器在共享 QEMU CAN 总线上持续进行经典 CAN 和 64 字节 CAN FD 通信。
+   * - ARDEP ``gpio_expander``
+     - CAN 配置和写请求更新 PA1，并体现在 CAN 状态响应中。
+   * - ARDEP ``iso14229``
+     - 接收诊断会话请求，并发送肯定 CAN 响应。
+
+ARDEP 示例使用固定版本源码构建，没有源码修改。直接启动验收禁用 MCUboot 和设备树代码分区；隔离 CAN 测试还禁用板上与测试无关的默认 UDS、CAN 日志和 USB 功能，使 CAN 控制器仅由示例占用。MCUboot 验收运行则使用默认三域构建和未经修改的闪存布局。
+
+ADC 和 DAC 示例需要尚未建模的模拟转换器。LIN 和 LIN-to-CAN 示例需要超出已建模 UART 路径的 LIN break 和帧处理行为。
+Power-I/O shield、HV shield、hardware-test 和 hardware-tester 示例需要尚未建模的 I2C、SPI、模拟功能或外部板行为。UDS 更新示例需要闪存编程和擦除支持。不能仅因这些示例可以构建，就报告为成功运行。
+
+功能测试资源
+----------------------
+
+基于发布资源的 Zephyr 测试使用来自 `stm32g474-ardep-v2-zephyr-qemu1
+<https://github.com/processmission/qemu/releases/tag/stm32g474-ardep-v2-zephyr-qemu1>`_、以 SHA-256 固定的二进制文件。该发布包含：
+
+* 两种机器共用的直接启动 Zephyr ``hello_world`` 镜像；
+* 交互式 ARDEP UART 示例；
+* 完整的 512 KiB MCUboot、固件加载器和 LED 应用闪存镜像；
+* ``SHA256SUMS`` 清单和精确源码版本。
+
+源码树不包含这些编译后的二进制文件。运行全面测试：
+
+.. code-block:: shell
+
+   make check-functional-arm
+
+
+设备行为和错误
+--------------------------
+
+保留寄存器位按照 RM0440 规定读取，并忽略写入，除非手册定义其他行为。对于不受支持的客户机操作，在有助于诊断固件时输出有针对性的 ``LOG_GUEST_ERROR`` 消息，但正常 Zephyr 初始化不得依赖日志抑制。
+
+有状态设备保留足够状态，以复现复位、IRQ、时钟和输出行为。在具备对应 VMState 和迁移测试之前，不声明迁移支持。主机 I/O 失败必须通过所属 QEMU 后端报告，不得改变客户机可见的寄存器语义。
+
+验证
+------------
+
+每项功能都配有范围最小且有用的 qtest。完整验证集合包括：
+
+* 创建 ``stm32g474`` 和 ``ardep-v2`` 两种机器。
+* 闪存、闪存别名、SRAM 和 CCM 别名读写测试。
+* 复位向量和重复复位测试。
+* RCC 复位值、就绪状态转换、PLL 配置、时钟切换、外设门控、复位控制和 RCC IRQ 测试。
+* PWR 和闪存延迟读写及复位测试。
+* UART4 轮询收发和 IRQ 测试。
+* GPIO 输出、输入、低电平有效 LED、SYSCFG 路由、EXTI 挂起和分组 IRQ 测试。
+* FDCAN 寄存器、消息 RAM、过滤、经典 CAN、CAN FD、回环、总线和 IRQ 测试。
+* USB FS 寄存器、分组内存、IRQ、时钟、复位和迁移测试。
+* 每个新外设寄存器块的复位值、访问掩码和行为回调测试。
+* 两种机器上的独立功能测试，覆盖原始闪存启动、UART4 输出和 QMP 系统复位。
+* 基于发布资源的功能测试，覆盖两种机器上的直接 Zephyr 启动、ARDEP UART 输入输出，以及 MCUboot 链式加载 ARDEP LED 示例。
+* 带正向成功标记和负向失败标记的定时 Zephyr 与 ARDEP 启动运行。
+
+所有用于验收的 QEMU 二进制文件均从功能分支构建，存放在有名称的 ``builds/`` 目录中。本地日志和固件构建保留在 ``.oh-my-qemu/`` 下。编译后的功能测试资源作为发布附件提供，并用 SHA-256 固定，不作为源码提交。

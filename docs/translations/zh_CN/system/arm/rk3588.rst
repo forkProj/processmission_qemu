@@ -1,0 +1,381 @@
+.. Copyright (c) 2026 Process Mission
+.. SPDX-License-Identifier: GPL-2.0-or-later
+
+Rockchip RK3588 板
+======================
+
+RK3588 机器是本地下游模型，用于启动为 Rockchip RK3588 板构建的 Linux 和固件镜像。它们支持 QEMU 的直接 Arm Linux 启动路径，也支持下游固件路径：运行 Rockchip TPL/SPL 镜像，验证 U-Boot FIT 可加载项，交接到 U-Boot proper，再由 U-Boot 从模拟的 MMC 介质启动 Linux 或 ZVM 测试镜像。
+
+提供三种板级机器。每块板都有独立的机器源文件和构建时 Kconfig 条目；公共 ``rk3588`` 类型是抽象类型，只包含共享 SoC 构造和启动编排：
+
+``rk3588-evb``
+  Rockchip RK3588 EVB 风格的板。固件启动从 ``if=sd,index=0`` 读取 Rockchip RKNS 镜像，并将其提供为不可移除的 eMMC 控制器。
+
+``rk3588s-roc-pc``
+  Firefly ROC-RK3588S-PC 板，在 QEMU 中名为 ``rk3588s-roc-pc``，使用硬件 compatible 字符串 ``rockchip,rk3588s-firefly-roc-pc``。固件启动从 ``if=sd,index=2`` 读取 Rockchip RKNS 镜像，通过软件包 ``mmc dev 1`` 启动脚本使用的 SDMMC/TF 卡控制器提供。此机器默认映射固定的 ZVM 客户机/共享 RAM 窗口，对应真实板更大的 DRAM 布局。
+
+``rock-5b-plus``
+  Radxa ROCK 5B+，具有 LPDDR5、两个板级 PCIe 主机，以及 Radxa RK3588 SDK 镜像所需的固件兼容配置。使用独立板级介质时，固件启动从 ``if=mtd,index=0`` 读取 SPI NOR，从 ``if=sd,index=2`` 读取 SD 载荷介质，后者是 U-Boot ``mmc dev 1`` 选择的控制器。未提供 SPI 驱动器时，仍接受 ``if=sd,index=0`` 处的完整旧式 Radxa 镜像。
+
+支持的设备
+-----------------
+
+机器目前模拟或以桩实现提供下游 RK3588 内核和 ZVM 冒烟测试所需的设备：
+
+* 八个符合 RK3588 big.LITTLE 布局的 Arm 核心：CPU 0 至 3 为 Cortex-A55，CPU 4 至 7 为 Cortex-A76。在 TCG 下，CPU 对象为固件和 ZVM 路径提供 EL2 和 EL3。RK3588 机器不安装针对 EL2 FP/SIMD 陷入或 EL2 PAN 处理的 RK3588 专用 CPU 兼容属性。
+* GICv3，具有两个 ITS 块并支持 LPI。
+* 全部十个 RK3588 UART（UART0 至 UART9），采用 QEMU 兼容 16550 的 ``serial_mm`` 模型，每个还覆盖 DesignWare APB UART 厂商寄存器（USR 位于 0x7c）。只有 ROCK 5B+ 上引出 I/O 的端口（UART1、UART2、UART3、UART4、UART7）绑定串口字符设备：UART2 保留 ``serial_hd(0)`` 作为控制台，其余按表中顺序映射到 ``-serial`` 槽位 1 至 4。剩余端口（UART0、UART5、UART6、UART8、UART9）也被模拟，但没有外部输出。
+* Rockchip GPIO 组。
+* 专用 RK3588 PMU0/PMU1/SYS GRF 寄存器组，以及用于 IOC 和防火墙类寄存器组的可复用、RAM 后备的 Rockchip syscon 块。
+* 专用 RK3588 DDR 控制器/PHY 窗口，以及厂商固件使用的 BL31 DDR 运行时描述符。
+* Rockchip 安全定时器桩实现。
+* RK3588 CRU 和基于 SMC 的 SCMI 时钟/复位支持。
+* SDHCI eMMC，以及用于 SD 卡控制器的 Synopsys DesignWare MMC。
+* RK3588 SFC，片选 0 上连接 XTX XT25F128 SPI NOR 设备。
+* Synopsys DWMAC4 GMAC0 和 GMAC1。
+* Rockchip DesignWare PCIe 主机封装，包括通过 GIC ITS 提供的 MSI/MSI-X。
+* 仅供固件使用的 USB2 EHCI/OHCI 寄存器窗口，用于 U-Boot 启动流程扫描。
+* 可选 RK3588 RKNN/RKNPU 核心寄存器模型，通过 ``-machine ...,rknpu=on`` 启用。它提供三个 RK3588 RKNN 核心，并为通过 Linux 主线 ``rocket`` 或厂商 ``rknpu`` 驱动提交的寄存器级任务实现硬件流水线执行。
+
+SFC 模型是 Rockchip Linux 和 U-Boot 驱动使用的寄存器驱动型 SPI 内存控制器，支持 JEDEC/SFDP 发现、PIO 传输和 DMA 传输。RK3588 机器源码中的 ``SPI`` 也用于表示 GIC 共享外设中断编号，并不代表第二个 SPI 控制器。
+
+可选 RKNPU 模型提供三个加速器核心及其 Rockchip IOMMU，通过 ``-machine ...,rknpu=on`` 启用。选定机器类型决定客户机可见的绑定：``rk3588-evb`` 和 ``rock-5b-plus`` 使用厂商 ``rknpu`` 驱动要求的聚合绑定，``rk3588s-roc-pc`` 则提供主线 ``rocket`` 驱动使用的逐核心绑定。
+
+任务可通过 PC 获取的命令描述符或从模式寄存器组提交。PC 描述符会继承后续稀疏描述符未重写的寄存器值。分组寄存器状态和任何进行中的任务都包含在迁移状态中。IOMMU 实现两种驱动所需的映射、失效、地址转换和权限故障行为。
+
+功能后端由寄存器驱动，不识别模型名称、任务编号或固定张量形状。已实现子集涵盖矩阵乘法以及直接或深度卷积的 INT8 和 FP16 CNA/CORE/DPU 流水线，DPU-RDMA 数据移动和算术，转换与 LUT 阶段，以及 PPU 恒等和最大池化操作。张量维度、步长、有效通道与存储通道、布局和 DMA 地址均从提交的寄存器状态解码。
+
+模型已使用未经修改的 ``rocket`` 和厂商 ``rknpu`` 驱动，以及 RKNN Runtime 工作负载进行验证。这验证了已实现格式和阶段组合，但不意味着完整覆盖 RK3588 NPU 或所有模型。不受支持的活动控制和布局会明确失败，不会被解释为某种已知工作负载配置。主机内存和工作量限制约束功能执行，防止格式错误的客户机任务阻塞 QEMU 或耗尽其资源。
+
+公共 IP 的边界
+--------------------
+
+若干模块被建模为可复用的 Rockchip 或 DesignWare 风格 IP，而不是 RK3588 专用设备：
+
+* ``rockchip-syscon`` 覆盖采用 RAM 后备存储的 GRF/IOC/防火墙寄存器组，并实现 Rockchip HIWORD 写入。
+* ``rockchip-stimer`` 覆盖 Rockchip 固件使用的安全定时器寄存器布局。
+* ``dw-apb-uart-vendor`` 覆盖兼容 16550 核心之上的 Synopsys DesignWare APB UART 扩展窗口。UART 核心本身是 QEMU 可复用的 ``serial_mm`` 兼容 16550 模型。
+* ``rockchip-dwcmshc-vendor`` 覆盖 DWCMSHC eMMC 控制器中 SDHCI 核心之上的 Rockchip 厂商窗口。SDHCI SDMA 缓冲区边界行为是通用 SDHCI 逻辑，并非 RK3588 专用逻辑。
+* ``dw-mmc`` 覆盖 RK3588 SD 卡控制器使用的 Synopsys DesignWare MMC 寄存器组、PIO FIFO 数据端口和 IDMAC 描述符流程。
+* ``rockchip-pcie-host`` 封装 QEMU 的 DesignWare PCIe 主机，并添加 ``dw-rockchip`` Linux 驱动所需的 Rockchip APB 厂商窗口。地址映射、compatible 字符串、MSI 路由和中断编号保留在 RK3588 板级代码中。
+
+所有 MMIO 寄存器行为都在机器源文件之外实现。RK3588 CRU、GRF、DDR、ATF DDR 运行时描述符、固件兼容 MMIO、SCMI、安全 OTP 和固件 USB2 主机窗口，都位于对应 ``hw/*`` 子系统目录下独立构建的设备中。公共机器源码只映射和连接这些设备，并实现 SoC 启动流程编排，例如 BootROM 加载、PSCI/GIC 交接和 SPL/BL31 到 U-Boot 的兼容路径。USB2 设备有意采用面向固件的寄存器模型，提供 U-Boot 扫描启动设备时所需的复位可见 EHCI/OHCI 状态。
+
+直接启动 Linux
+-----------------
+
+以下命令在 EVB 机器上启动 ``build/agent`` 中的 RK3588 Linux 镜像和 initramfs，并连接冒烟测试 eMMC 镜像、板级 GMAC 和一个 PCIe virtio-net 设备：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rk3588-evb \
+       -smp 2 \
+       -m 1G \
+       -kernel build/agent/linux-src/arch/arm64/boot/Image \
+       -initrd build/agent/initramfs.cpio.gz \
+       -append "console=ttyS2,1500000n8 rdinit=/init" \
+       -drive if=sd,file=build/agent/rk3588-modeling/logs/emmc-smoke.img,format=raw \
+       -nic user,model=gmac0 \
+       -netdev user,id=vnet0 \
+       -device virtio-net-pci,netdev=vnet0 \
+       -serial mon:stdio \
+       -display none
+
+
+内核控制台为 UART2，因此应在内核命令行保留 ``console=ttyS2,1500000n8``。
+
+ROC PC 机器支持相同的直接 Linux 启动路径：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rk3588s-roc-pc \
+       -smp 2 \
+       -m 1G \
+       -kernel build/agent/linux-src/arch/arm64/boot/Image \
+       -initrd build/agent/initramfs.cpio.gz \
+       -append "console=ttyS2,1500000n8 rdinit=/init" \
+       -drive if=sd,file=build/agent/rk3588-modeling/logs/emmc-smoke.img,format=raw \
+       -nic user,model=gmac0 \
+       -netdev user,id=vnet0 \
+       -device virtio-net-pci,netdev=vnet0 \
+       -serial mon:stdio \
+       -display none
+
+
+ROCK 5B+ 支持配合 Radxa SDK 内核使用相同路径。例如：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rock-5b-plus \
+       -smp 8 \
+       -m 1G \
+       -kernel Image \
+       -initrd initramfs.cpio.gz \
+       -append "console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfeb50000,1500000n8 keep_bootcon rdinit=/init" \
+       -serial mon:stdio \
+       -display none
+
+
+通过固件启动 U-Boot
+--------------------
+
+固件路径要求原始 eMMC 镜像在 LBA 64 包含 Rockchip 组合镜像 ``u-boot-rockchip.bin``：
+
+.. code-block:: bash
+
+   $ truncate -s 64M build/agent/rk3588-firmware-boot/scratch/rk3588-firmware-emmc.img
+   $ dd if=build/agent/rk3588-firmware-boot/scratch/u-boot-build/u-boot-rockchip.bin \
+        of=build/agent/rk3588-firmware-boot/scratch/rk3588-firmware-emmc.img \
+        bs=512 seek=64 conv=notrunc
+
+
+运行固件冒烟测试路径：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rk3588-evb \
+       -smp 1 \
+       -m 1G \
+       -drive if=sd,index=0,file=build/agent/rk3588-firmware-boot/scratch/rk3588-firmware-emmc.img,format=raw \
+       -serial mon:stdio \
+       -display none
+
+
+此路径执行 Rockchip DDR/TPL 镜像，进入 U-Boot SPL，验证 FIT 可加载项，并将 SPL 最终的 ATF 分支替换为 QEMU 私有 SMC，携带 SPL 的 BL31 参数块进入 BL31。BL31 经过模拟的初始化路径后，一个范围有限的 BL31 退出适配层在 ``0x800000`` 交接到 U-Boot proper，并提供下游冒烟测试路径所需的 EL2/GIC/PSCI 状态。交接后，模型提供 USB2 主机寄存器窗口，使 U-Boot 启动流程探测能够继续，而不会因访问未映射的固件 MMIO 触发同步中止。这用于覆盖下游固件启动验证，不是对真实 RK3588 PMU/安全固件环境的完整替代。
+
+Radxa ROCK 5B+ 固件镜像
+-----------------------------
+
+``rock-5b-plus`` 固件配置接受完整的原始 Radxa SDK 镜像，也接受真实板使用的分离布局：SPI NOR 包含 U-Boot，SD 卡包含 ZVisor/客户机载荷文件。分离布局使固件与载荷介质保持独立，同时保留板的启动顺序。
+
+对于完整旧式镜像，无需提取或重新打包：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rock-5b-plus \
+       -smp 1 \
+       -m 8G \
+       -drive if=sd,index=0,file=rock-5b-plus_bookworm_kde_b2.output.img,format=raw \
+       -snapshot \
+       -serial mon:stdio \
+       -display none
+
+
+对于分离 SPI/SD 布局，传入包含 Rockchip SPI 启动镜像的 16 MiB SPI NOR 镜像，以及 FAT 分区中包含 U-Boot 环境所加载文件（``zvisor.img``、``zvisor.dtb``、``zephyr-guest.bin``、``linux-Image.flash.gz`` 和 ``initramfs.cpio.flash.gz``）的 SD 镜像：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg,thread=multi \
+       -machine rock-5b-plus \
+       -smp 8 \
+       -m 8G \
+       -drive if=mtd,index=0,file=rock5b-spi-16m.img,format=raw \
+       -drive if=sd,index=2,file=rock5b-sd-payload.img,format=raw \
+       -serial mon:stdio \
+       -monitor none \
+       -display none
+
+
+SPI 镜像在偏移 ``0x8000`` 处包含 RKNS 头，在 ``0x60000`` 处包含 FIT。SD 载荷镜像连接到 DesignWare MMC 控制器，因此 U-Boot 将其视为 ``mmc 1``，使用 ``mmc 1:1`` 加载 FAT 文件。RK3588 机器默认具有 8 GiB 内存。ROCK 5B+ 默认采用 ``0x10000000`` 作为直接内核启动的 RAM 基址。4 GiB 外设窗口以下的 RAM 映射到低地址组，剩余 RAM 映射到 16 GiB，避免与 4 GiB 处固定的 ZVM 高地址内存窗口重叠。
+
+此路径运行镜像的 DDR/TPL 和 SPL 代码，验证全部 FIT 可加载项，使用 FIT 元数据动态选择 U-Boot 加载地址，进入 U-Boot proper，并继续其 ``extlinux`` 启动流程。U-Boot 从镜像根文件系统加载 SDK 内核、initramfs 和 ``rk3588-rock-5b-plus.dtb``，随后打印 ``Starting kernel ...``。
+
+``firmware-bootargs`` 机器属性无需修改镜像，即可向内核命令行追加参数：U-Boot ``booti`` 在进入内核前立即使用自身环境重写 ``/chosen/bootargs``，因此模型持续原位修补 DTB 的 bootargs 值（在现有属性槽内等长写入，移除末尾的 ``androidboot.fwver`` 标记以腾出空间），直到观察到内核入口，随后不再修改设备树。Radxa Bookworm 镜像配合上述参数可无图形启动；不使用这些参数时，KDE 图形目标会因没有 DRM 而停滞，PSCI cpuidle 路径可能使 CPU 一直休眠。
+
+已验证运行使用官方 6.1.84-8-rk2410 内核，在串口控制台到达 ``rock-5b-plus login:`` 提示符（用户名和密码均为 ``rock``）。客户机中，SD 卡显示为 ``mmcblk0``，具有 ``/config``、``/boot/efi`` 和根分区；``/proc/mtd`` 将 16 MiB SFC 闪存显示为 ``mtd0`` （``loader`` 分区）；``lspci`` 枚举出 PCIe 根桥（``0002:20:00.0 DWC_usb3 / PCIe bridge``）。
+
+``pcie2x1l0`` 上的网络端点通过两种方式验证。qtest ``/rock-5b-plus/pcie2x1l0-virtio-net`` 将 ``virtio-net-pci`` 连接到根桥次级总线（``bus=/pcie2x1l0/pcie/designware-pcie-root/dw-pcie``），验证 ATU 配置路径、BAR 分配、MSI-X 表以及通过 socket ``-netdev`` 进行的完整收发。在实际 Linux 客户机中，将网卡连接到同一总线也能端到端工作::
+
+   $ qemu-system-aarch64 -machine rock-5b-plus,firmware-bootargs='cpuidle.off=1 systemd.unit=multi-user.target' \
+       -smp 1 -m 8G -drive if=sd,index=0,file=rock-5b-plus_bookworm_kde_r7.output_512.img,format=raw -snapshot \
+       -netdev user,id=n0 -device e1000e,bus=/pcie2x1l0/pcie/designware-pcie-root/dw-pcie,netdev=n0 \
+       -serial mon:stdio -display none
+
+
+客户机内核在桥次级总线（``0002:21:00.0``）枚举端点，通过桥窗口分配 BAR（32 位地址为 0xf2xxxxxx，64 位可预取 BAR 位于 4 GiB 以上），e1000e 驱动以 1 Gbit/s 启动，通过 DHCP 获得 10.0.2.15，并可经 ``-netdev user`` 正常使用 ping 和 HTTP。（原版 Radxa 内核不包含 virtio PCI 驱动，因此实际启动检查使用镜像自带的 e1000e 驱动。）
+
+从 U-Boot 启动 Linux
+--------------------
+
+完整 U-Boot 路径使用原始 eMMC 镜像，其中 LBA 64 包含 Rockchip 固件，启动分区包含 ``extlinux.conf``、``Image``、``initramfs.cpio.gz`` 和 QEMU 生成的 RK3588 DTB。镜像内嵌 DTB 必须使用与运行时相同的 ``-smp`` 值生成。
+
+本地验证过的下游镜像使用以下命令启动：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rk3588-evb \
+       -smp 2 \
+       -m 1G \
+       -drive if=sd,index=0,file=build/agent/rk3588-uboot-linux/scratch/rk3588-uboot-linux-emmc-earlycon.img,format=raw \
+       -nic user,model=gmac0 \
+       -netdev user,id=vnet0 \
+       -device virtio-net-pci,netdev=vnet0 \
+       -serial mon:stdio \
+       -display none
+
+
+已验证的 ``extlinux.conf`` 传入：
+
+.. code-block:: text
+
+   console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfeb50000,1500000n8 keep_bootcon loglevel=8 rdinit=/init
+
+
+U-Boot 从 eMMC 加载内核、initramfs 和 DTB，打印 ``Starting kernel ...``，冒烟测试 initramfs 最终到达 ``=== init done, exec sh ===``。
+
+RK3588 EVB 上的 ZVM
+-------------------
+
+EVB ZVM 冒烟测试路径使用 eMMC 镜像，以及上游软件包通过 ``mmc dev 0`` 执行的手动复制序列。此机器默认禁用可选 ZVM RAM 窗口，因此需要启用：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rk3588-evb,zvm-ram=on \
+       -smp 8 \
+       -m 1G \
+       -drive if=sd,index=0,file=build/agent/zvm-rk3588/scratch/zvm-rk3588-qemu-emmc.img,format=raw \
+       -serial mon:stdio \
+       -display none
+
+
+在 U-Boot 提示符下运行：
+
+.. code-block:: text
+
+   => echo loading ZVM img ...
+   => mmc dev 0
+   => fatload mmc 0:1 0x10000000 zvm_release_rk3588v2.bin
+   => cp.b 0x103fd000 0x38800000 0x2f000
+   => cp.b 0x1038b000 0x38600000 0x71958
+   => cp.b 0x10319000 0x38400000 0x712e0
+   => cp.b 0x102a7000 0x38200000 0x71178
+   => cp.b 0x1023c000 0x38000000 0x6afc8
+   => cp.b 0x1023b000 0x12afa000 0x4
+   => cp.b 0x100f7000 0x129b6000 0x143570
+   => go 0x10000000
+
+
+已验证的不带兼容属性运行可到达 ``zvm_host:~#``，并启动附带的 Zephyr 客户机。此 EVB 镜像适合 ZVM 主机和基本客户机冒烟测试路径；完整 Linux 虚拟机发布镜像布局请使用下文 ROC 镜像。
+
+ROC-RK3588S-PC 上的 ZVM
+-----------------------
+
+`RK3588 ZVM 部署指南
+<https://esnl.hnu.edu.cn/zvm/document/deploy_rk3588.html>`_ 面向 Firefly ROC-RK3588S-PC 板。它要求第一个 FAT 分区为 8 GiB，第二个分区大于 21 GiB，启动文件放在第一个分区，并以 ``bs=1M seek=1024`` 将 ``nrtos_images.bin`` 写入第二个分区。随后，将打包的文件系统镜像以间隔 3 GiB 的偏移写入第二个分区，为 ZVM 客户机运行记录保留该分区的前 3 GiB：
+
+* ``android_vda.img`` 位于 ``seek=3072``
+* ``oh_vda.bin`` 位于 ``seek=6144``
+* ``linux_diskimg.bin`` 位于 ``seek=9216``、``12288``、``15360`` 和 ``19432``
+
+从官方 `ZVM RK3588 下载页面
+<https://esnl.hnu.edu.cn/zvm/downloads/download_rk3588.html>`_ 下载 ZVM 发布二进制文件。QEMU 镜像流程使用以下发布包：
+
+* ``kernel_images.zip``：提供 ``kernel_images/``，包含 ``zvm_release_rk3588v2.bin``、``boot.scr``、``nrtos_images.bin`` 和软件包辅助脚本使用的原始镜像。
+* ``file_system_images_part1.zip`` 和 ``file_system_images_part2.zip``：提供 ``file_system_images/``。运行其中的 ``unpack.sh``，生成包含 ``android_vda.img``、``oh_vda.bin`` 和 ``linux_diskimg.bin`` 的 ``file_system_images/image/`` 目录。
+
+Rockchip RKNS 固件二进制文件 ``u-boot-rockchip.bin`` 独立于 ZVM 发布包。使用上述固件流程构建的 RK3588 U-Boot，或能够生成相同 Rockchip 组合镜像的其他 ROC-RK3588S-PC U-Boot 构建。
+
+发布包还提供了 ``nrtos_imagespack.py``，其中 ``N = 0x1205000``。对于原始 QEMU TF 卡镜像，这意味着第二个分区必须从扇区 ``0x1005000`` 开始，使 ``seek=1024`` 将 ``nrtos_images.bin`` 放在 ZVM 读取的绝对扇区。更常见的按 8 GiB 对齐的第二分区起点 ``0x1008000`` 会使镜像晚 6 MiB，导致 ZVM 虽能检测槽位，但加载到的 Linux 缓冲区全为零。
+
+``nrtos_images.bin`` 内的 Linux 内核槽位必须与 ``linux_diskimg.bin`` 中的模块匹配。发布文件系统包含 ``/lib/modules/5.10.110/kernel/zshm.ko``，其 ``vermagic=5.10.110 SMP mod_unload aarch64``。如果将前 64 MiB Linux 内核槽位替换为不匹配内核，Linux 仍可能到达 Buildroot 登录提示符，但 ``zshm.ko`` 加载失败，ZVM 操作测试的心跳将一直等到 Linux 虚拟机启动超时。本地验证镜像在该槽位使用发布版 ``Image.official`` 5.10.110 内核。
+
+要从官方软件包重新构建启动载荷，在 ``kernel_images`` 目录运行软件包辅助脚本，并选择选项 ``3``：
+
+.. code-block:: bash
+
+   $ cd build/agent/zvm-rk3588/work/kernel_images
+   $ printf '3\n' | ./auto_py.sh
+
+
+这会重新生成 ``nrtos_images.bin``、``zvm_release_rk3588v2.bin`` 和 ``boot.scr``。辅助脚本先运行 ``raw_kernel_images/nrtos_imagespack.py``，再运行 ``raw_kernel_images/pack_img_v2.py``。第一个脚本将 Linux、Android 和 OpenHarmony 的内核/initramfs/DTB 槽位打包到 ``nrtos_images.bin`` 的固定大小区域。第二个脚本将 ``raw_kernel_images/segments.map`` 列出的 ZVM 段与 Zephyr 和 FreeRTOS 辅助镜像一起打包到 ``zvm_release_rk3588v2.bin``，并刷新 U-Boot 脚本。
+
+仓库还提供用于 ROC 板的 QEMU 原始镜像辅助工具。它支持安装了 ``dosfstools`` 和 ``mtools`` 的 Linux 主机，也通过 ``hdiutil`` 和 ``newfs_msdos`` 支持 macOS 主机：
+
+.. code-block:: bash
+
+   $ ZVM=build/agent/zvm-rk3588
+   $ KIMG=$ZVM/work/kernel_images
+   $ FSIMG=$ZVM/work/file_system_images_official/image
+   $ UBOOT=$ZVM/scratch/u-boot-roc-zvmcompat-build/u-boot-rockchip.bin
+   $ OUT=$ZVM/scratch/zvm-rk3588-qemu-roc-sd-official-fixed.img
+   $ scripts/zvm/rk3588s-roc-pc-make-zvm-image.sh \
+       --kernel-dir "$KIMG" \
+       --filesystem-dir "$FSIMG" \
+       --uboot-rockchip "$UBOOT" \
+       --output "$OUT" \
+       --force
+
+
+脚本创建 32 GiB 原始卡镜像，写入 MBR 分区表，格式化两个 FAT 分区，将 ``zvm_release_rk3588v2.bin`` 和 ``boot.scr``/``boot.scr.uimg`` 复制到第一个分区，以 ``bs=1M seek=1024`` 将 ``nrtos_images.bin`` 写入第二个分区，按上述偏移写入 Android/OpenHarmony/Linux 文件系统镜像，并在 LBA 64 安装 ``u-boot-rockchip.bin``。
+
+诊断 ``Timeout waiting for vm: linux_os-1 start`` 或 ``Failed to run linux VM 1, ret=-19`` 时，应先检查镜像内容，再修改 CPU 或机器状态：
+
+* ``nrtos_images.bin`` 槽位必须能从 ZVM 预期的绝对扇区读取。软件包使用 ``N = 0x1205000``，因此第二个分区应从扇区 ``0x1005000`` 开始，并以 ``seek=1024`` 将文件写入该分区。
+* ``nrtos_images.bin`` 前 64 MiB 中的 Linux 内核必须与文件系统模块匹配。本地测试将 7.1.0-rc7 内核与发布版 5.10.110 根文件系统配合使用，通过 ``zvm look 1`` 到达 Linux 登录提示符，但 ``insmod /lib/modules/5.10.110/kernel/zshm.ko`` 因 ``invalid module format`` 失败，ZVM 等待心跳超时。
+* 当前模型没有 RK3588 专用的 EL2 FP/SIMD 或 PAN 兼容属性。已验证的不带兼容属性运行仍为 ``linux_os-1`` 显示 ``Start VM Successful`` 和 ``[CREATE] linux VM 1 created and running``。如果发布镜像超时，首先检查 ZVM Linux 内核与根文件系统是否一致。
+
+使用专用 ROC 机器，并将准备好的 TF 卡镜像连接为 ``if=sd,index=2``。QEMU BootROM 从此卡的 LBA 64 读取 Rockchip RKNS 固件镜像，随后 U-Boot 将同一卡提供为 ``mmc 1``：
+
+.. code-block:: bash
+
+   $ build/qemu-system-aarch64 \
+       -accel tcg \
+       -machine rk3588s-roc-pc \
+       -smp 8 \
+       -m 1G \
+       -drive if=sd,index=2,file=build/agent/zvm-rk3588/scratch/zvm-rk3588-qemu-roc-sd-official-fixed.img,format=raw \
+       -nic user,model=gmac0 \
+       -nic user,model=gmac1 \
+       -serial mon:stdio \
+       -display none
+
+
+为使本地冒烟测试可重复，每次运行前应使用新准备的 TF 卡镜像，或刷新 LBA 64 的 Rockchip RKNS 固件区域。ZVM 软件包会将运行时状态写回卡镜像；否则，复用临时镜像可能在 ZVM 启动前就于 SPL 阶段出现 ``spl_load_simple_fit: can't load image loadables`` 或 ``mmc block read error``。
+
+已验证的固件路径在 TPL/SPL 检查 ATF/U-Boot FIT 可加载项后到达 U-Boot proper。U-Boot 启动流程在第一个 FAT 分区找到 ``boot.scr.uimg``，自动执行软件包的加载/复制序列。如果在提示符处中断自动启动，也可手动执行相同序列：
+
+.. code-block:: text
+
+   => echo loading ZVM img ...
+   => mmc dev 1
+   => fatload mmc 1:1 0x10000000 zvm_release_rk3588v2.bin
+   => cp.b 0x103fd000 0x38800000 0x2f000
+   => cp.b 0x1038b000 0x38600000 0x71958
+   => cp.b 0x10319000 0x38400000 0x712e0
+   => cp.b 0x102a7000 0x38200000 0x71178
+   => cp.b 0x1023c000 0x38000000 0x6afc8
+   => cp.b 0x1023b000 0x12afa000 0x4
+   => cp.b 0x100f7000 0x129b6000 0x143570
+   => go 0x10000000
+
+
+本地冒烟测试加载 ``zvm_release_rk3588v2.bin``，将打包的客户机镜像复制到固定地址，初始化 GMAC1，启动附带的 Zephyr 客户机，检测 Android/OpenHarmony/Linux 文件系统槽位，并从修正后的第二分区偏移加载 Linux Image、DTB 和 initramfs 缓冲区。ROC 板将 GMAC1 别名设为 ``ethernet0``；上述命令也为 GMAC0 分配 user netdev，避免第二个模拟 MAC 没有对端。软件包将 Linux 客户机控制台配置为 ``0xfeb50000`` 的 PL011，使用 ``console=ttyAMA2,1500000`` 和 ``earlycon=pl011,0xfeb50000``。ZVM 将主机 shell 保留在 QEMU 串口终端；Linux 虚拟机运行后，在 ZVM shell 中连接客户机控制台：
+
+.. code-block:: text
+
+   zvm_host:~# zvm look 1
+
+
+已验证运行随后在同一 QEMU 串口终端显示 Linux Buildroot 控制台。使用匹配的 5.10.110 内核和 ``zshm.ko`` 时，ZVM 为 ``linux_os-1`` 报告 ``Start VM Successful``。
+
+已知限制
+-----------------
+
+当前模型用于内核和固件初始启动的冒烟测试，不模拟闭源 PMU 固件或完整 EL3 MMU/地址转换设置。RK3588 机器应用范围有限的运行时适配层，进入 BL31、推动 BL31 初始化、交接到 U-Boot proper，并准备 U-Boot Linux 入口路径要求的非安全 PSCI/GIC 状态。U-Boot 自动启动扫描模拟的 eMMC/SDMMC、USB2 和 GMAC 启动设备，启动 extlinux 测试镜像，或在不存在启动镜像时到达提示符。USB3 DWC3 和连接的 USB 存储未建模。
+
+Linux 可能打印已忽略的 SCMI protocol-16 事件注册警告；PCIe 传统 INTx irq-domain 路径仅有桩实现，而 PCIe MSI/MSI-X 可通过 ITS 正常工作。
