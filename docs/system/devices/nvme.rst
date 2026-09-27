@@ -353,27 +353,27 @@ controller and assign an admin queue, an IO queue, and a MSI-X interrupt.
 The minimum steps required to configure a functional NVMe secondary
 controller are:
 
-  * unbind flexible resources from the primary controller
+* unbind flexible resources from the primary controller
 
 .. code-block:: console
 
    nvme virt-mgmt /dev/nvme0 -c 0 -r 1 -a 1 -n 0
    nvme virt-mgmt /dev/nvme0 -c 0 -r 0 -a 1 -n 0
 
-  * perform a Function Level Reset on the primary controller to actually
-    release the resources
+* perform a Function Level Reset on the primary controller to actually
+  release the resources
 
 .. code-block:: console
 
    echo 1 > /sys/bus/pci/devices/0000:01:00.0/reset
 
-  * enable VF
+* enable VF
 
 .. code-block:: console
 
    echo 1 > /sys/bus/pci/devices/0000:01:00.0/sriov_numvfs
 
-  * assign the flexible resources to the VF and set it ONLINE
+* assign the flexible resources to the VF and set it ONLINE
 
 .. code-block:: console
 
@@ -381,7 +381,7 @@ controller are:
    nvme virt-mgmt /dev/nvme0 -c 1 -r 0 -a 8 -n 2
    nvme virt-mgmt /dev/nvme0 -c 1 -r 0 -a 9 -n 0
 
-  * bind the NVMe driver to the VF
+* bind the NVMe driver to the VF
 
 .. code-block:: console
 
