@@ -111,8 +111,9 @@ Bitmap Status
 -------------
 
 Dirty Bitmap objects can be queried with the QMP command `query-block
-<qemu-qmp-ref.html#index-query_002dblock>`_, and are visible via the
-`BlockDirtyInfo <qemu-qmp-ref.html#index-BlockDirtyInfo>`_ QAPI structure.
+<qemu-qmp-ref.html#command-QMP-block-core.query-block>`_, and are visible via the
+`BlockDirtyInfo
+<qemu-qmp-ref.html#object-QMP-block-core.BlockDirtyInfo>`_ QAPI structure.
 
 This struct shows the name, granularity, and dirty byte count for each bitmap.
 Additionally, it shows several boolean status indicators:
@@ -130,8 +131,8 @@ commands documented below will refuse to work on such bitmaps.
 The ``+inconsistent`` status similarly prohibits almost all operations,
 notably allowing only the ``block-dirty-bitmap-remove`` operation.
 
-There is also a deprecated ``status`` field of type `DirtyBitmapStatus
-<qemu-qmp-ref.html#index-DirtyBitmapStatus>`_. A bitmap historically had
+There is also a deprecated ``status`` field of type ``DirtyBitmapStatus``.
+A bitmap historically had
 five visible states:
 
    #. ``Frozen``: This bitmap is currently in-use by an operation and is
@@ -190,7 +191,7 @@ Creation: block-dirty-bitmap-add
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `block-dirty-bitmap-add
-<qemu-qmp-ref.html#index-block_002ddirty_002dbitmap_002dadd>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.block-dirty-bitmap-add>`_:
 
 Creates a new bitmap that tracks writes to the specified node. granularity,
 persistence, and recording state can be adjusted at creation time.
@@ -237,7 +238,7 @@ Deletion: block-dirty-bitmap-remove
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `block-dirty-bitmap-remove
-<qemu-qmp-ref.html#index-block_002ddirty_002dbitmap_002dremove>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.block-dirty-bitmap-remove>`_:
 
 Deletes a bitmap. Bitmaps that are ``+busy`` cannot be removed.
 
@@ -269,7 +270,7 @@ Resetting: block-dirty-bitmap-clear
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `block-dirty-bitmap-clear
-<qemu-qmp-ref.html#index-block_002ddirty_002dbitmap_002dclear>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.block-dirty-bitmap-clear>`_:
 
 Clears all dirty bits from a bitmap. ``+busy`` bitmaps cannot be cleared.
 
@@ -295,7 +296,7 @@ Enabling: block-dirty-bitmap-enable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `block-dirty-bitmap-enable
-<qemu-qmp-ref.html#index-block_002ddirty_002dbitmap_002denable>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.block-dirty-bitmap-enable>`_:
 
 "Enables" a bitmap, setting the ``recording`` bit to true, causing writes to
 begin being recorded. ``+busy`` bitmaps cannot be enabled.
@@ -324,7 +325,7 @@ Enabling: block-dirty-bitmap-disable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `block-dirty-bitmap-disable
-<qemu-qmp-ref.html#index-block_002ddirty_002dbitmap_002ddisable>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.block-dirty-bitmap-disable>`_:
 
 "Disables" a bitmap, setting the ``recording`` bit to false, causing further
 writes to begin being ignored. ``+busy`` bitmaps cannot be disabled.
@@ -362,7 +363,7 @@ Merging, Copying: block-dirty-bitmap-merge
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `block-dirty-bitmap-merge
-<qemu-qmp-ref.html#index-block_002ddirty_002dbitmap_002dmerge>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.block-dirty-bitmap-merge>`_:
 
 Merges one or more bitmaps into a target bitmap. For any segment that is dirty
 in any one source bitmap, the target bitmap will mark that segment dirty.
@@ -409,7 +410,7 @@ Querying: query-block
 ~~~~~~~~~~~~~~~~~~~~~
 
 `query-block
-<qemu-qmp-ref.html#index-query_002dblock>`_:
+<qemu-qmp-ref.html#command-QMP-block-core.query-block>`_:
 
 Not strictly a bitmaps command, but will return information about any bitmaps
 attached to nodes serving as the root for guest devices.
@@ -474,7 +475,8 @@ Transactions are a QMP feature that allows you to submit multiple QMP commands
 at once, being guaranteed that they will all succeed or fail atomically,
 together. The interaction of bitmaps and transactions are demonstrated below.
 
-See `transaction <qemu-qmp.ref.html#index-transaction>`_ in the QMP reference
+See `transaction
+<qemu-qmp-ref.html#command-QMP-transaction.transaction>`_ in the QMP reference
 for more details.
 
 Justification
@@ -540,12 +542,12 @@ from the point in time at which the incremental backup was issued.
 
 The "Push Model" here references the fact that QEMU is "pushing" the modified
 blocks out to a destination. We will be using the  `blockdev-backup
-<qemu-qmp-ref.html#index-blockdev_002dbackup>`_ QMP command to create both
+<qemu-qmp-ref.html#command-QMP-block-core.blockdev-backup>`_ QMP command to create both
 full and incremental backups.
 
 The command is a background job, which has its own QMP API for querying and
 management documented in `Background jobs
-<qemu-qmp-ref.html#Background-jobs>`_.
+<qemu-qmp-ref.html#background-jobs>`_.
 
 Example: New Incremental Backup Anchor Point
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -557,8 +559,8 @@ This example creates a new, full backup of "drive0" and accompanies it with a
 new, empty bitmap that records writes from this point in time forward.
 
 The target can be created with the help of `blockdev-add
-<qemu-qmp-ref.html#index-blockdev_002dadd>`_ or `blockdev-create
-<qemu-qmp-ref.html#index-blockdev_002dcreate>`_ command.
+<qemu-qmp-ref.html#command-QMP-block-core.blockdev-add>`_ or `blockdev-create
+<qemu-qmp-ref.html#command-QMP-block-core.blockdev-create>`_ command.
 
 .. note:: Any new writes that happen after this command is issued, even while
           the backup job runs, will be written locally and not to the backup
@@ -1363,7 +1365,7 @@ Example: Partial Transactional Failures
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 QMP commands like `blockdev-backup
-<qemu-qmp-ref.html#index-blockdev_002dbackup>`_
+<qemu-qmp-ref.html#command-QMP-block-core.blockdev-backup>`_
 conceptually only start a job, and so transactions containing these commands
 may succeed even if the job it created later fails. This might have surprising
 interactions with notions of how a "transaction" ought to behave.

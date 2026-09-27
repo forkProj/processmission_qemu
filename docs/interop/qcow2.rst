@@ -242,7 +242,7 @@ Header padding
 ``header_length`` must be a multiple of 8, which means that if the end of the last
 additional field is not aligned, some padding is needed. This padding must be
 zeroed, so that if some existing (or future) additional field will fall into
-the padding, it will be interpreted accordingly to point `[3.] <#ref_rules_3>`_ of the previous
+the padding, it will be interpreted accordingly to point :ref:`[3.] <ref_rules_3>` of the previous
 paragraph, i.e.  in the same manner as when this field is not present.
 
 
